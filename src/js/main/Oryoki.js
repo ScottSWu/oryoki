@@ -305,7 +305,7 @@ Oryoki.prototype.clearCaches = function() {
 		// @if NODE_ENV='development'
 		c.log('[ORYOKI] Will delete: ' + folderPath);
 		// @endif
-		exec('cd ' + folderPath + ' && rm *', function(error, stdout, stderr) {
+		rimraf(path.join(folderPath, '*'), function(error, stdout, stderr) {
 			if(error) {
 				errors++;
 				// If folder is already clear, do nothing
@@ -328,7 +328,7 @@ Oryoki.prototype.clearLocalStorage = function() {
 	// @if NODE_ENV='development'
 	c.log('[ORYOKI] Will delete: ' + folderPath);
 	// @endif
-	exec('cd ' + folderPath + ' && rm *', function(error, stdout, stderr) {
+	rimraf(path.join(folderPath, '*'), function(error, stdout, stderr) {
 		if(error) {
 			// If folder is already clear, do nothing
 		}

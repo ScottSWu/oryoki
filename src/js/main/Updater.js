@@ -210,7 +210,7 @@ Updater.prototype.extractUpdate = function() {
 Updater.prototype.quitAndInstall = function() {
 
 	// In case a previous version is still in downloads
-	execSync('rm -rf ' + '\"' + path.join(app.getPath('downloads'), 'Oryoki.app') + '\"');
+	rimraf.sync(path.join(app.getPath('downloads'), 'Oryoki.app'));
 
 	// Move to downloads
 	fs.rename(path.join(this.tmpDir, 'Oryoki.app'), path.join(app.getPath('downloads'), 'Oryoki.app'), function(err) {
@@ -239,7 +239,7 @@ Updater.prototype.quitAndInstall = function() {
 
 Updater.prototype.cleanUp = function() {
 
-	exec('cd ' + '\'' + UserManager.user.paths.tmp + '\'' + ' && rm -rf Update-*', function(error, stdout, stderr) {
+	rimraf(path.join(UserManager.user.paths.tmp, 'Update-*'), function(error, stdout, stderr) {
 
 		if(error) throw error;
 
