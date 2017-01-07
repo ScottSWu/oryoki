@@ -4,6 +4,8 @@
 
 Ōryōki [応量器] is an experimental web browser with a thin interface.
 
+*This fork is an attempt to build and run all features on Windows.*
+
 ![Oryoki](https://github.com/thmsbfft/oryoki/blob/master/oryoki.png?raw=true "Oryoki")
 
 ## Features
