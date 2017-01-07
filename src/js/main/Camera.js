@@ -16,7 +16,7 @@ function Camera() {
 	CommandManager.setEnabled('Tools', 'Stop Recording', false);
 
 	this.isEncoding = false;
-	this.recordingPath = UserManager.user.paths.tmp + '/' + 'Recording';
+	this.recordingPath = path.join(UserManager.user.paths.tmp, 'Recording');
 
 	this.tray = null;
 
@@ -88,12 +88,12 @@ Camera.prototype.saveScreenshot = function(url, title) {
 				return;
 			}
 		}
-		
+
 		if(hostname == null) {
 			// No URL
 			var name = 'oryoki-' + date + '-' + time;
 
-			fs.writeFile(path + '/' + name + '.png', image.toPng(), function(err) {
+			fs.writeFile(path.join(path, name + '.png'), image.toPng(), function(err) {
 				if(err)
 					throw err;
 				this.browser.webContents.send('show-status');
@@ -115,7 +115,7 @@ Camera.prototype.saveScreenshot = function(url, title) {
 			chunks.splice(-1, 0, text.encode('title', Buffer.from(title).toString('base64')));
 			chunks.splice(-1, 0, text.encode('src', url));
 
-			fs.writeFile(path + '/' + name + '.png', new Buffer(encode(chunks)), function(err) {
+			fs.writeFile(path.join(path, name + '.png'), new Buffer(encode(chunks)), function(err) {
 				if(err)
 					throw err;
 				this.browser.webContents.send('show-status');
@@ -237,7 +237,7 @@ Camera.prototype.startRecording = function() {
 Camera.prototype.recordRaw = function(frameBuffer) {
 
 	if(this.isRecording) {
-		
+
 		// @if NODE_ENV='development'
 		// c.log('[CAMERA] #'+this.frameCount);
 		// @endif
@@ -267,7 +267,7 @@ Camera.prototype.recordRaw = function(frameBuffer) {
 		vr = 0;
 		colors = 0;
 		importantColors = 0;
-		
+
 		var tempBuffer = new Buffer(offset+rgbSize);
 		pos = 0;
 		tempBuffer.write(flag,pos,2);pos+=2;
@@ -300,22 +300,22 @@ Camera.prototype.recordRaw = function(frameBuffer) {
 			}
 			if(extraBytes>0){
 				var fillOffset = pos+y*rowBytes+width*3;
-				tempBuffer.fill(0,fillOffset,fillOffset+extraBytes);	
+				tempBuffer.fill(0,fillOffset,fillOffset+extraBytes);
 			}
 		}
 
 		// Left pad frame number for ffmpeg
 		var frameNumber = '00000'.substring(this.frameCount.toString().length) + this.frameCount.toString();
-		
+
 		// Save frame to tmp folder
 		if(UserManager.getPreferenceByName("video_recording_mode") == "async") {
 
-			fs.writeFile(this.recordingPath + '/' + frameNumber + '.bmp', tempBuffer);
+			fs.writeFile(path.join(this.recordingPath, frameNumber + '.bmp'), tempBuffer);
 
 		}
 		else if(UserManager.getPreferenceByName("video_recording_mode") == "sync") {
 
-			fs.writeFileSync(this.recordingPath + '/' + frameNumber + '.bmp', tempBuffer);
+			fs.writeFileSync(path.join(this.recordingPath, frameNumber + '.bmp'), tempBuffer);
 
 		}
 
@@ -378,14 +378,14 @@ Camera.prototype.stopRecording = function() {
 						c.log('Error encoding: ' + err.message);
 						// @endif
 					}.bind(this))
-					.input(this.recordingPath + '/' + '%05d.bmp')
+					.input(path.join(this.recordingPath, '%05d.bmp'))
 					.withInputFps(60)
 					.withOutputFps(30)
 					.videoCodec('prores_ks')
-					.save(app.getPath('downloads') + '/' + name + '.mov');
+					.save(path.join(app.getPath('downloads'), name + '.mov'));
 
 				break;
-			
+
 			case "mp4":
 
 				this.ffmpegCommand = ffmpeg()
@@ -403,13 +403,13 @@ Camera.prototype.stopRecording = function() {
 						c.log('Error encoding: ' + err.message);
 						// @endif
 					}.bind(this))
-					.input(this.recordingPath + '/' + '%05d.bmp')
+					.input(path.join(this.recordingPath, '%05d.bmp'))
 					.withInputFps(60)
 					.withOutputFps(30)
 					.videoCodec('libx264')
 					.withVideoBitrate('10000k')
 					.addOptions(['-preset ultrafast', '-pix_fmt yuvj420p'])
-					.save(app.getPath('downloads') + '/' + name + '.mp4');
+					.save(path.join(app.getPath('downloads'), name + '.mp4'));
 
 				break;
 
@@ -440,13 +440,13 @@ Camera.prototype.stopRecording = function() {
 						c.log('Error encoding: ' + err.message);
 						// @endif
 					}.bind(this))
-					.input(this.recordingPath + '/' + '%05d.bmp')
+					.input(path.join(this.recordingPath, '%05d.bmp'))
 					.withInputFps(60)
 					.withOutputFps(30)
 					.videoCodec('libx264')
 					.withVideoBitrate('10000k')
 					.addOptions(['-preset ultrafast', '-pix_fmt yuvj420p'])
-					.save(app.getPath('downloads') + '/' + name + '.mp4');
+					.save(path.join(app.getPath('downloads'), name + '.mp4'));
 
 		}
 
@@ -480,7 +480,7 @@ Camera.prototype.cleanTmpRecording = function() {
 
 	if(frames.length > 0) {
 		for(var i = 0; i < frames.length; i++) {
-			var framePath = this.recordingPath + '/' + frames[i];
+			var framePath = path.join(this.recordingPath, frames[i]);
 			fs.unlinkSync(framePath);
 		}
 	}
@@ -494,7 +494,7 @@ Camera.prototype.showTray = function() {
 
 	var contextMenu = Menu.buildFromTemplate([
 		{
-			label: 'Ōryōki is recording', 
+			label: 'Ōryōki is recording',
 			enabled: false
 		},
 		{
@@ -502,7 +502,7 @@ Camera.prototype.showTray = function() {
 		},
 		{
 			label: 'Stop Recording',
-			accelerator: 'Cmd+Alt+Shift+P', 
+			accelerator: 'Cmd+Alt+Shift+P',
 			click: function() {
 				this.stopRecording();
 			}.bind(this)

@@ -19,7 +19,7 @@ function CommandManager() {
 }
 
 CommandManager.prototype.createMenus = function() {
-	
+
 	var name = app.getName();
 
 	// Special cases
@@ -95,7 +95,7 @@ CommandManager.prototype.createMenus = function() {
 				{
 					label: 'Search Dictionary...',
 					click: function() {
-						shell.openItem(UserManager.user.paths.conf + '/' + 'search-dictionary.json');
+						shell.openItem(path.join(UserManager.user.paths.conf, 'search-dictionary.json'));
 					}
 				},
 				{

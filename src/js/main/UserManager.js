@@ -4,7 +4,7 @@ function UserManager() {
 		'preferences' : this.getFactoryFile('factory.json'),
 		'searchDictionary' : this.getFactoryFile('search-dictionary.json')
 	}
-	
+
 	// We'll only use one user for now.
 	this.user = new User('Oryoki', this.factory);
 
@@ -33,13 +33,13 @@ UserManager.prototype.getFactoryFile = function(fileName) {
 	// @if NODE_ENV='development'
 	c.log('Getting ' + fileName + ' – ' + JSON.parse(stripped));
 	// @endif
-	
+
 	return JSON.parse(stripped);
 
 }
 
 UserManager.prototype.getPreferenceByName = function(name) {
-	/* 
+	/*
 	Checks default user for preference
 	If not defined, falls back to factory setting.
 	*/
@@ -53,7 +53,7 @@ UserManager.prototype.getPreferenceByName = function(name) {
 
 UserManager.prototype.reset = function(niceName, fileName, factoryName) {
 
-	fs.writeFile(this.user.paths.conf + '/' + fileName, fs.readFileSync(__dirname + '/src/data/' + factoryName, 'utf8'), function(err) {
+	fs.writeFile(path.join(this.user.paths.conf, fileName), fs.readFileSync(path.join(__dirname, 'src/data', factoryName), 'utf8'), function(err) {
 		// @if NODE_ENV='development'
 		if(err) c.log(err);
 		// @endif
@@ -65,7 +65,7 @@ UserManager.prototype.reset = function(niceName, fileName, factoryName) {
 }
 
 UserManager.prototype.resetUserPreferencesToFactory = function() {
-	fs.writeFile(this.user.paths.conf + '/' + 'oryoki-preferences.json', fs.readFileSync(__dirname + '/src/data/factory.json', 'utf8'), function(err) {
+	fs.writeFile(path.join(this.user.paths.conf, 'oryoki-preferences.json'), fs.readFileSync(path.join(__dirname, 'src/data/factory.json'), 'utf8'), function(err) {
 		// @if NODE_ENV='development'
 		if(err) c.log(err);
 		// @endif
@@ -76,5 +76,5 @@ UserManager.prototype.resetUserPreferencesToFactory = function() {
 }
 
 UserManager.prototype.openPreferencesFile = function() {
-	shell.openItem(this.user.paths.conf + '/' + 'oryoki-preferences.json');
+	shell.openItem(path.join(this.user.paths.conf, 'oryoki-preferences.json'));
 }

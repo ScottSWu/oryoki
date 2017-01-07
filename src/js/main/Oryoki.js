@@ -30,7 +30,7 @@ function Oryoki() {
 
 	this.attachEvents();
 	if(UserManager.getPreferenceByName("clear_caches_on_launch")) this.clearCaches();
-	
+
 	this.createWindow();
 
 }
@@ -178,7 +178,7 @@ Oryoki.prototype.handleFile = function(input) {
 
 	// Check if the content is an url
 	if(validUrl.isUri(src[0].text)) {
-		
+
 		var url = src[0].text;
 
 		if(this.focusedWindow && this.focusedWindow.isFirstLoad) {
@@ -212,7 +212,7 @@ Oryoki.prototype.handleFile = function(input) {
 Oryoki.prototype.onFocusChange = function(w) {
 
 	this.focusedWindow = w;
-	
+
 	Camera.browser = this.focusedWindow.browser;
 	Camera.browserWindow = w;
 
@@ -223,7 +223,7 @@ Oryoki.prototype.onFocusChange = function(w) {
 }
 
 Oryoki.prototype.closeWindow = function() {
-	
+
 	this.focusedWindow.close();
 
 }
@@ -265,7 +265,7 @@ Oryoki.prototype.focusNextWindow = function() {
 
 		this.windows[index].focus();
 
-	}	
+	}
 
 }
 
@@ -300,7 +300,7 @@ Oryoki.prototype.clearCaches = function() {
 
 	caches.forEach(function(element) {
 
-		var folderPath = UserManager.user.paths.conf + '/' + element;
+		var folderPath = path.join(UserManager.user.paths.conf, element);
 		folderPath = folderPath.replace(' ', '\\ ');
 		// @if NODE_ENV='development'
 		c.log('[ORYOKI] Will delete: ' + folderPath);
@@ -324,7 +324,7 @@ Oryoki.prototype.clearCaches = function() {
 
 Oryoki.prototype.clearLocalStorage = function() {
 
-	var folderPath = UserManager.user.paths.conf.replace(' ', '\\ ') + '/Local\\ Storage';
+	var folderPath = path.join(UserManager.user.paths.conf.replace(' ', '\\ '), 'Local\\ Storage');
 	// @if NODE_ENV='development'
 	c.log('[ORYOKI] Will delete: ' + folderPath);
 	// @endif

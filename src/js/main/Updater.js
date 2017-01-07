@@ -1,5 +1,5 @@
 function Updater() {
-	
+
 	// @if NODE_ENV='development'
 	c.log('[Updater] ✔');
 	// @endif
@@ -19,7 +19,7 @@ function Updater() {
 }
 
 Updater.prototype.checkForUpdate = function(alert) {
-	
+
 	// @if NODE_ENV='development'
 	c.log('[Updater] Checking for updates...');
 	// @endif
@@ -59,7 +59,7 @@ Updater.prototype.compareVersions = function(alert) {
 	var suspect = this.latest.version.split('.');
 
 	for(var i=0; i < suspect.length; i++) {
-		
+
 		// major.minor.revision, single digits
 
 		if(parseInt(suspect[i]) > parseInt(current[i])) {
@@ -128,7 +128,7 @@ Updater.prototype.downloadUpdate = function() {
 	}
 
 	// Create a TMP folder
-	this.tmpDir = UserManager.user.paths.tmp + '/' + 'Update-' + this.latest.version;
+	this.tmpDir = path.join(UserManager.user.paths.tmp, 'Update-' + this.latest.version);
 
 	try {
 		fs.statSync(this.tmpDir);
@@ -144,7 +144,7 @@ Updater.prototype.downloadUpdate = function() {
 
 	// Start downloading
 	var downloadProcess = exec('cd ' + '\'' + this.tmpDir + '\'' + ' && curl -O ' + this.latest.url, function(error, stdout, stderr) {
-		
+
 		if(error) {
 			// @if NODE_ENV='development'
 			c.log('[Updater] Download failed. Err: ' + error.signal);
@@ -164,7 +164,7 @@ Updater.prototype.downloadUpdate = function() {
 			this.extractUpdate();
 
 		}
-	
+
 	}.bind(this));
 
 }
@@ -200,7 +200,7 @@ Updater.prototype.extractUpdate = function() {
 				body: 'Ōryōki ' + this.latest.version + ' is ready to be installed.',
 				silent: true
 			});
-			
+
 		}
 
 	}.bind(this));
@@ -210,10 +210,10 @@ Updater.prototype.extractUpdate = function() {
 Updater.prototype.quitAndInstall = function() {
 
 	// In case a previous version is still in downloads
-	execSync('rm -rf ' + '\"' + app.getPath('downloads') + '/Oryoki.app' + '\"');
+	execSync('rm -rf ' + '\"' + path.join(app.getPath('downloads'), 'Oryoki.app') + '\"');
 
 	// Move to downloads
-	fs.rename(this.tmpDir + '/Oryoki.app', app.getPath('downloads') + '/Oryoki.app', function(err) {
+	fs.rename(path.join(this.tmpDir, 'Oryoki.app'), path.join(app.getPath('downloads'), 'Oryoki.app'), function(err) {
 
 		if(err) {
 			// @if NODE_ENV='development'
@@ -222,7 +222,7 @@ Updater.prototype.quitAndInstall = function() {
 		}
 
 		// Reveal in Finder
-		execSync('open -R ' + app.getPath('downloads') + '/Oryoki.app', function(err) {
+		execSync('open -R ' + path.join(app.getPath('downloads'), 'Oryoki.app'), function(err) {
 			if(err) {
 				// @if NODE_ENV='development'
 				c.log('[Updater] Error while revealing update: ' + err);

@@ -6,7 +6,7 @@ function User(name, factory) {
 
 	// Storing in ~/Library/Application Support/Oryoki | Electron
 
-	this.paths.conf = app.getPath('appData') + '/' + app.getName();
+	this.paths.conf = path.join(app.getPath('appData'), app.getName());
 	// Check App Data dir
 	try {
 		fs.statSync(this.paths.conf);
@@ -23,7 +23,7 @@ function User(name, factory) {
 		}
 	}
 
-	this.paths.tmp = this.paths.conf + '/' + 'Temporary';
+	this.paths.tmp = path.join(this.paths.conf, 'Temporary');
 	// Check Temporary dir
 	try {
 		fs.statSync(this.paths.tmp);
@@ -45,7 +45,7 @@ function User(name, factory) {
 	this.searchDictionary = this.getConfFile('search-dictionary.json', this.createSearchDictionary.bind(this));
 
 	// Watch files for changes
-	fs.watchFile(this.paths.conf + '/' + 'oryoki-preferences.json', function() {
+	fs.watchFile(path.join(this.paths.conf, 'oryoki-preferences.json'), function() {
 
 		this.onPreferencesChange();
 		if(CommandManager) CommandManager.refreshMenus();
@@ -57,7 +57,7 @@ function User(name, factory) {
 
 	}.bind(this));
 
-	fs.watchFile(this.paths.conf + '/' + 'search-dictionary.json', function() {
+	fs.watchFile(path.join(this.paths.conf, 'search-dictionary.json'), function() {
 
 		this.onSearchDictionaryChange();
 
@@ -124,7 +124,7 @@ User.prototype.onPreferencesChange = function() {
 	// @endif
 
 	this.preferences = this.getConfFile('oryoki-preferences.json', this.createPreferences.bind(this));
-	
+
 	/* WEB PLUGINS */
 
 	if(this.getPreferenceByName('web_plugins_path') != "") {
@@ -132,7 +132,7 @@ User.prototype.onPreferencesChange = function() {
 		this.paths.webPlugins = this.getPreferenceByName('web_plugins_path');
 	}
 	else {
-		this.paths.webPlugins = this.paths.conf + '/' + 'Web Plugins';
+		this.paths.webPlugins = path.join(this.paths.conf, 'Web Plugins');
 	}
 
 	// Check Web Plugins paths
@@ -168,11 +168,11 @@ User.prototype.getConfFile = function(fileName, callback) {
 	try {
 
 		// Erase comments to validate JSON
-		var raw = fs.readFileSync(this.paths.conf + '/' + fileName, 'utf8');
+		var raw = fs.readFileSync(path.join(this.paths.conf, fileName), 'utf8');
 		var re = /(^\/\/|^\t\/\/).*/gm; // Any line that starts with `//` or with a tab followed by `//`
 		var stripped = raw.replace(re, '');
 
-		return JSON.parse(stripped);	
+		return JSON.parse(stripped);
 
 	}
 	catch(err) {
@@ -197,18 +197,18 @@ User.prototype.getConfFile = function(fileName, callback) {
 
 User.prototype.createPreferences = function() {
 
-	fs.writeFileSync(this.paths.conf + '/' + 'oryoki-preferences.json', fs.readFileSync(__dirname + '/src/data/factory.json', 'utf8'));
+	fs.writeFileSync(path.join(this.paths.conf, 'oryoki-preferences.json'), fs.readFileSync(path.join(__dirname, '/src/data/factory.json'), 'utf8'));
 
 }
 
 User.prototype.createSearchDictionary = function() {
 
-	fs.writeFileSync(this.paths.conf + '/' + 'search-dictionary.json', fs.readFileSync(__dirname + '/src/data/search-dictionary.json', 'utf8'));
+	fs.writeFileSync(path.join(this.paths.conf, 'search-dictionary.json'), fs.readFileSync(path.join(__dirname, '/src/data/search-dictionary.json'), 'utf8'));
 
 }
 
 User.prototype.getPreferenceByName = function(name) {
-	/* 
+	/*
 	Checks user for preference
 	If not defined, falls back to factory setting.
 	*/
